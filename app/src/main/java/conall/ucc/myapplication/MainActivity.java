@@ -18,14 +18,14 @@ import android.widget.VideoView;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    private Button browseVideoFileButton = null;
-    private Button playVideoButton = null;
-    private VideoView playVideoView = null;
+    
     private static final int REQUEST_CODE_SELECT_VIDEO_FILE = 1;
     private static final int REQUEST_CODE_READ_EXTERNAL_PERMISSION = 2;
     private Uri videoFileUri = null;
-    private boolean isVideoPaused = false;
+    private boolean videoPaused = false;
+    private Button browseVideoButton = null;
+    private Button playButton = null;
+    private VideoView videoPlayView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
         // get permissions to read external storage and select video to play
 
-        browseVideoFileButton.setOnClickListener(new View.OnClickListener() {
+        browseVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                int readExternalStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+                int externalStoragePermiss = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
 
-                if(readExternalStoragePermission != PackageManager.PERMISSION_GRANTED)
+                if(externalStoragePermiss != PackageManager.PERMISSION_GRANTED)
                 {
                     String requirePermission[] = {Manifest.permission.READ_EXTERNAL_STORAGE};
                     ActivityCompat.requestPermissions(MainActivity.this, requirePermission, REQUEST_CODE_READ_EXTERNAL_PERMISSION);
@@ -56,14 +56,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // plays video
-        playVideoButton.setOnClickListener(new View.OnClickListener() {
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                    playVideoView.setVideoURI(videoFileUri);
-                    playVideoView.setVisibility(View.VISIBLE);
-                    playVideoView.start();
-                    playVideoButton.setEnabled(false);
+
+                    videoPlayView.setVideoURI(videoFileUri);
+                    videoPlayView.setVisibility(View.VISIBLE);
+                    videoPlayView.start();
+                    playButton.setEnabled(false);
 
 
                 }
@@ -76,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
     // initialize buttons
     private void initVideoControls()
     {
-            browseVideoFileButton = findViewById(R.id.browse_video_file_button);
-            playVideoButton = findViewById(R.id.play_video_start_button);
-            playVideoView = findViewById(R.id.play_video_view);
+            browseVideoButton = findViewById(R.id.browse_video_file_button);
+            playButton = findViewById(R.id.play_video_start_button);
+            videoPlayView = findViewById(R.id.play_video_view);
 
         setContinueVideoAfterSeekComplete();
     }
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                 videoFileUri = data.getData();
                 // String videoFileName = videoFileUri.getLastPathSegment();
-                playVideoButton.setEnabled(true);
+                playButton.setEnabled(true);
 
             }
         }
@@ -133,16 +134,16 @@ public class MainActivity extends AppCompatActivity {
     // plays video
     private void setContinueVideoAfterSeekComplete()
     {
-        playVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        videoPlayView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
                     @Override
                     public void onSeekComplete(MediaPlayer mediaPlayer) {
-                        if(isVideoPaused)
+                        if(videoPaused)
                         {
-                            playVideoView.start();
-                            isVideoPaused = false;
+                            videoPlayView.start();
+                            videoPaused = false;
                         }
                     }
                 });
